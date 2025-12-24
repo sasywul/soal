@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel – Ujian Nasional Bucin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --primary: #ff6b81;
+  --secondary: #ff4757;
+  --glass: rgba(255,255,255,0.9);
+}
+
+body {
+  margin: 0;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: var(--glass);
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+h1 {
+  font-family: 'Great Vibes', cursive;
+  text-align: center;
+  font-size: 3.5rem;
+  margin: 0;
+  background: linear-gradient(#ff6b81, #ff4757);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.login-box {
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;
+  border-radius: 30px;
+  border: 2px solid #f8a5c2;
+  font-size: 1rem;
+}
+
+button {
+  padding: 14px 30px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255,154,158,0.5);
+}
+
+.error {
+  color: #ff4757;
+  margin-top: 10px;
+}
+
+.panel {
+  display: none;
+}
+
+.search {
+  width: 300px;
+  margin: 20px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  vertical-align: top;
+}
+
+th {
+  background: #ffe6f0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+tr:nth-child(even) {
+  background: #fff5f7;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Admin Panel</h1>
+  <div class="subtitle">Ujian Nasional Bucin 2025 💌</div>
+
+  <!-- LOGIN -->
+  <div class="login-box" id="loginBox">
+    <input type="password" id="key" placeholder="Password Admin">
+    <button onclick="login()">Masuk</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <!-- PANEL -->
+  <div class="panel" id="panel">
+    <input class="search" type="text" placeholder="Cari nama..." onkeyup="filterData(this.value)">
+    <div style="overflow-x:auto;">
+      <table id="table"></table>
+    </div>
+  </div>
+
+  <div class="footer">
+    🔐 Private Admin • Jangan dibagikan sembarangan
+  </div>
+
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCPcwdwVbrYAIC4GINQqbat1iG2PM7l1rPyyhMxX37mJRKSU9KVx6DDlGN_8dG7_oDGg/exec"; // WAJIB DIGANTI
+
+function login() {
+  const key = document.getElementById("key").value;
+
+  fetch(`${SCRIPT_URL}?key=${key}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("error").innerText = "Password salah.";
+        return;
+      }
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("panel").style.display = "block";
+      renderTable(data);
+    })
+    .catch(() => {
+      document.getElementById("error").innerText = "Gagal koneksi ke server.";
+    });
+}
+
+function renderTable(data) {
+  const table = document.getElementById("table");
+  table.innerHTML = "";
+
+  data.forEach((row, i) => {
+    const tr = document.createElement("tr");
+    row.forEach(cell => {
+      const el = document.createElement(i === 0 ? "th" : "td");
+      el.textContent = cell;
+      tr.appendChild(el);
+    });
+    table.appendChild(tr);
+  });
+}
+
+function filterData(keyword) {
+  const rows = document.querySelectorAll("#table tr");
+  rows.forEach((row, i) => {
+    if (i === 0) return;
+    row.style.display = row.innerText.toLowerCase().includes(keyword.toLowerCase())
+      ? ""
+      : "none";
+  });
+}
+</script>
+
+</body>
+</html>
